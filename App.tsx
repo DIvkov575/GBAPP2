@@ -27,11 +27,11 @@ import * as FileSystem from 'expo-file-system';
 //   return SQLite.openDatabase('myDatabaseName.db');
 // }
 
-const db = SQLite.openDatabase('itemList');
 
-db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>
-  console.log('Foreign keys turned on')
-);
+
+// db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>
+//   console.log('Foreign keys turned on')
+// );
 
 
 

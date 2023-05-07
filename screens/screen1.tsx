@@ -5,35 +5,102 @@ import { TouchableOpacity, StyleSheet,TextInput, Text, View, SafeAreaView } from
 import * as SQLite from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system';
 
-async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
-  if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
-    await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
+
+interface Props {
+    title: string;
+    brand: string;
+    date: string;
+    variant: string;
+    location: string;
+    note: string;
+    rating: number;
+}
+
+export default class homeScreen extends React.Component {
+
+  constructor(props: any) {
+    super(props);
+    this.state = {data: null}
+
+    const db = SQLite.openDatabase('itemList');
+    db.transaction(tx => {
+          tx.executeSql(
+            `CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT,
+              title TEXT,
+              brand TEXT,
+              date TEXT,
+              variant TEXT,
+              location TEXT,
+              note TEXT,
+              rating INTEGER  )`
+          )
+        });
+
+    this.addItems();
+    let output = this.fetchItems();
+    console.log(output);
+
+    // console.log(this.state.data)
+
   }
-  await FileSystem.downloadAsync(
-    Asset.fromModule(require(pathToDatabaseFile)).uri,
-    FileSystem.documentDirectory + 'SQLite/myDatabaseName.db'
-  );
-  return SQLite.openDatabase('myDatabaseName.db');
-}
+  addItems() {
+    const db = SQLite.openDatabase('itemList');
+    db.transaction(tx => {
+      tx.executeSql('INSERT INTO items (title, brand, date, variant, location, note, rating) values (?, ?, ?, ?, ?, ?, ?)', ['a', 'a', 'a', 'a', 'a', 'a', 5])
+        // (txObj, resultSet) => this.setState({ data: this.state.data.concat(
+        //   { id: 0, title: 'a', brand: 'a' }) }),
+        // (txObj, error) => console.log('Error', error))
+    })
+    console.log("execution additems")
+  }
+  // addItems() {
+  //   const db = SQLite.openDatabase('itemList');
+  //   db.transaction(tx => {
+  //     tx.executeSql('INSERT INTO items (title, brand) values (?, ?)', ['a', 'a'],
+  //       (txObj, resultSet) => this.setState({ data: this.state.data.concat(
+  //           { id: resultSet.insertId, title: 'a', brand: 'a' }) }),
+  //       (txObj, error) => console.log('Error', error))
+  //   })
+  //   console.log("execution additems")
+  // }
 
-export default function homeScreen() {
-  // const [searchBar, onChangeSearchBar] = React.useState('Useless Text');
-  return (
-    <SafeAreaView>
-      <Text>{"screen1"}</Text>
-      <TextInput
-      style={styles.inputA}
-          // value={number}
-    placeholder="Search"
-     />
-    <Item
-      title="a"
-      other="b"
-    />
+  fetchItems() {
+    const db = SQLite.openDatabase('itemList');
+    let error: String = "";
 
-    </SafeAreaView>
-  );
-}
+    db.transaction(tx => {
+      tx.executeSql('SELECT * FROM items', null,
+        ((txObj, { rows: { _array } }) => this.setState({ data: _array })),
+        ((txObj, error) => console.log('(fetchItems) Error ', error))
+      )})
+
+    console.log("execution fetchitems")
+    return this.state.data;
+  }
+
+  render() {
+    return (
+      <SafeAreaView>
+        <Text>{"screen1"}</Text>
+        <TextInput
+        style={styles.inputA}
+        placeholder="Search"
+      />
+      <Item
+        title="a"
+        brand="b"
+        date="b"
+        variant="b"
+        location="b"
+        note="b"
+        rating={5}
+      />
+
+      </SafeAreaView>
+    );
+    }
+
+  }
 
 const styles = StyleSheet.create({
   inputA : {
