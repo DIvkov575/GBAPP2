@@ -16,6 +16,38 @@ interface Props {
     rating: number;
 }
 
+  const addItems = () => {
+    const db = SQLite.openDatabase('itemList');
+    db.transaction(tx => {
+      tx.executeSql('INSERT INTO items (title, brand, date, variant, location, note, rating) values (?, ?, ?, ?, ?, ?, ?)', ['a', 'a', 'a', 'a', 'a', 'a', 5])
+        // (txObj, resultSet) => this.setState({ data: this.state.data.concat(
+        //   { id: 0, title: 'a', brand: 'a' }) }),
+        // (txObj, error) => console.log('Error', error))
+    })
+    console.log("execution additems")
+  }
+  // addItems() {
+  //   const db = SQLite.openDatabase('itemList');
+  //   db.transaction(tx => {
+  //     tx.executeSql('INSERT INTO items (title, brand) values (?, ?)', ['a', 'a'],
+  //       (txObj, resultSet) => this.setState({ data: this.state.data.concat(
+  //           { id: resultSet.insertId, title: 'a', brand: 'a' }) }),
+  //       (txObj, error) => console.log('Error', error))
+  //   })
+  //   console.log("execution additems")
+  // }
+
+  const fetchItems = () => {
+    const db = SQLite.openDatabase('itemList');
+    let error: String = "";
+
+    db.transaction(tx => {
+      tx.executeSql('SELECT * FROM items', null,
+        // ((txObj, { rows: { _array } }) => this.setState({ data: _array })),
+        ((txObj, { rows: { _array } }) =>  {return _array} )),
+        ((txObj:any, error:any) => console.log('(fetchItems) Error ', error))
+      )})
+  }
 export default class homeScreen extends React.Component {
 
   constructor(props: any) {
@@ -42,40 +74,6 @@ export default class homeScreen extends React.Component {
 
     // console.log(this.state.data)
 
-  }
-  addItems() {
-    const db = SQLite.openDatabase('itemList');
-    db.transaction(tx => {
-      tx.executeSql('INSERT INTO items (title, brand, date, variant, location, note, rating) values (?, ?, ?, ?, ?, ?, ?)', ['a', 'a', 'a', 'a', 'a', 'a', 5])
-        // (txObj, resultSet) => this.setState({ data: this.state.data.concat(
-        //   { id: 0, title: 'a', brand: 'a' }) }),
-        // (txObj, error) => console.log('Error', error))
-    })
-    console.log("execution additems")
-  }
-  // addItems() {
-  //   const db = SQLite.openDatabase('itemList');
-  //   db.transaction(tx => {
-  //     tx.executeSql('INSERT INTO items (title, brand) values (?, ?)', ['a', 'a'],
-  //       (txObj, resultSet) => this.setState({ data: this.state.data.concat(
-  //           { id: resultSet.insertId, title: 'a', brand: 'a' }) }),
-  //       (txObj, error) => console.log('Error', error))
-  //   })
-  //   console.log("execution additems")
-  // }
-
-  fetchItems() {
-    const db = SQLite.openDatabase('itemList');
-    let error: String = "";
-
-    db.transaction(tx => {
-      tx.executeSql('SELECT * FROM items', null,
-        ((txObj, { rows: { _array } }) => this.setState({ data: _array })),
-        ((txObj, error) => console.log('(fetchItems) Error ', error))
-      )})
-
-    console.log("execution fetchitems")
-    return this.state.data;
   }
 
   render() {
